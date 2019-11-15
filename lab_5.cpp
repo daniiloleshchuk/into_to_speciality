@@ -1,106 +1,127 @@
+
+
 #include <iostream>
-#include <cmath>
 using namespace std;
-class Polinom {
-protected:
-    int n = 1;
-    int m,x;
-    void setRes() {
-        for (n = 1; n <= m; n++) {
-            res += (pow(-1, n + 1)) * (pow(x, n) / n);
-        }
-    }
+#define SIZE 5
+
+class Array {
+private:
+    int PrivateArr[SIZE];
 public:
-    double res;
-    Polinom(int _m,int _x){
-        m=_m;
-        x=_x;
-        this->setRes();
-
-    }
-    double getRes(){
-        return res;
-    }
-    //
-    Polinom& operator=(const Polinom& result) {
-        //проверка на самоприсваивание
-        if (this == &result) {
-            return *this;
-        }
-        res= result.res;
-        return *this;
-    }
-
+    friend void setMatrix(Array Matrix[]);
+    friend void coutMatrix(Array Matrix[]);
+    friend void FiAij(Array *Matr);
+    friend void SortArray(Array  arr[], int n);
+    int operator [] (int i){
+         return PrivateArr[i];
+     }
 };
-bool operator == (Polinom A, Polinom B)
+
+void SortArray(Array  arr[], int n)
 {
-    return A.res == B.res;
-}
-bool operator < (Polinom A, Polinom B)
-{
-    return  A.res < B.res;
-}
-bool operator > (Polinom A, Polinom B)
-{
-    return  A.res > B.res;
-}
-double operator - (Polinom A,Polinom B){
-    return  A.res-B.res;
-}
-double operator *= (Polinom A,Polinom B){
-    return A.res*=B.res;
-}
-ostream& operator<<(ostream &stream, Polinom& n){
-    cout<<n.res<<endl;
-    stream << n.res;
-    return stream;
-}
-istream& operator>>(istream &stream,Polinom& n){
-    cout << "Enter res" << endl;
-    stream >> n.res;
-    return stream;
-}
-int main() {
-    Polinom A(4,2);
-    Polinom B(3,2);
-    cout<<"A   "<<A.getRes()<<endl;
-    cout<<"B   "<<B.getRes()<<endl;
-    bool b = (A==B);
-    double c;
-    if (b==1){
-        cout<<"Поліном A = Поліном B"<<endl;
+    for (int i = 0; i < n; i++)
+    {
+        for (int BlockSizeIterator = 1; BlockSizeIterator < n; BlockSizeIterator *= 2)
+        {
+            for (int BlockIterator = 0; BlockIterator < n - BlockSizeIterator; BlockIterator += 2 * BlockSizeIterator)
+            {
+                int LeftBlockIterator = 0;
+                int RightBlockIterator = 0;
+                int LeftBorder = BlockIterator;
+                int MidBorder = BlockIterator + BlockSizeIterator;
+                int RightBorder = BlockIterator + 2 * BlockSizeIterator;
+                RightBorder = (RightBorder < n) ? RightBorder : n;
+                int* SortedBlock = new int[RightBorder - LeftBorder];
+
+                while (LeftBorder + LeftBlockIterator < MidBorder && MidBorder + RightBlockIterator < RightBorder)
+                {
+                    if (arr[i].PrivateArr[LeftBorder + LeftBlockIterator] > arr[i].PrivateArr[MidBorder + RightBlockIterator])
+                    {
+                        SortedBlock[LeftBlockIterator + RightBlockIterator] = arr[i].PrivateArr[LeftBorder + LeftBlockIterator];
+                        LeftBlockIterator++;
+                    }
+                    else
+                    {
+                        SortedBlock[LeftBlockIterator + RightBlockIterator] = arr[i].PrivateArr[MidBorder + RightBlockIterator];
+                        RightBlockIterator++;
+                    }
+                }
+                while (LeftBorder + LeftBlockIterator < MidBorder)
+                {
+                    SortedBlock[LeftBlockIterator + RightBlockIterator] = arr[i].PrivateArr[LeftBorder + LeftBlockIterator];
+                    LeftBlockIterator++;
+                }
+                while (MidBorder + RightBlockIterator < RightBorder)
+                {
+                    SortedBlock[LeftBlockIterator + RightBlockIterator] = arr[i].PrivateArr[MidBorder + RightBlockIterator];
+                    RightBlockIterator++;
+                }
+
+                for (int MergeIterator = 0; MergeIterator < LeftBlockIterator + RightBlockIterator; MergeIterator++)
+                {
+                    arr[i].PrivateArr[LeftBorder + MergeIterator] = SortedBlock[MergeIterator];
+                }
+                delete SortedBlock;
+
+            }
+
+        }
     }
-    else cout<<"Поліном А != Поліном B"<<endl;
-    b= (A<B);
-    if (b==1){
-        cout<<"Поліном A < Поліном B"<<endl;
-    } else cout<<"Поліном А !< Поліном B"<<endl;
-    b= (A>B);
-    if (b==1){
-        cout<<"Поліном A > Поліном B"<<endl;
-    } else cout<<"Поліном А !> Поліном B"<<endl;
-    c= (A-B);
-    cout<<"A-B === "<<c<<endl;
-    c=(A*=B);
-    cout<<"A*=B === "<<c<<endl;
-    cin>>A;
-    cin>>B;
-    cout<<"A is "<<A<<endl;
-    cout<<"B is "<<B<<endl;
-    A=B;
-    cout<<"A is "<<A<<endl;
-
-
-    /*
-                    A=B
-                    A==B
-                    A<B
-                    A>B
-                    A-B
-                    A*=B
-                    vyvod<<A vyvod<<B
-                    vvid>>A vvid>>B
-*/
-    return 0;
 }
+void setMatrix(Array Matrix[]) {
+        for (int i = 0; i <SIZE ; i++) {
+            for (int j = 0; j <SIZE ; j++) {
+                cout << "Enter array element №" << j + 1 << endl;
+                cin>>Matrix[i].PrivateArr[j];
+            }
+        }
+}
+void coutMatrix(Array Matrix[]){
+    for (int row = 0; row <SIZE ; row++) {
+        for (int column = 0; column <SIZE ; column++) {
+            cout<<Matrix[row].PrivateArr[column]<<"     ";
+        }
+        cout<<"\n\n\n";
+    }
+}
+void FiAij(Array *Matr){
+    int n = 0;
+    float res=1;
+    for (int k = 0,r=1; k < SIZE-1 ; k++,r++) {
+        n = 0;
+        float s = 0;
+        cout<<"Середнє арифметичне чисел  ";
+        for (int l = 0; l < SIZE - k - 1 ; l++) {
+            s+=Matr[l][k];
+            cout<<Matr[l][k]<<"  ";
+            n++;
+        }
+        if (n != 0) {
+            s /= n;
+            cout<<" === "<<s<<endl;
+        }
+        res*=s;
+    }
+    cout<<"F(FiAij)= "<<res<<endl;
+}
+
+int main(){
+    Array Matrix[SIZE];
+    cout<<"\t\t\t\tInPut matrix"<<endl;
+    setMatrix(Matrix);
+    cout<<"\t\t\t\tOutPut not-sorted matrix"<<endl;
+    coutMatrix(Matrix);
+    cout<<"\n\n\n";
+
+    cout<<"\t\t\t\tOutPut sorted matrix"<<endl;
+    SortArray(Matrix,SIZE);
+
+    coutMatrix(Matrix);
+    cout<<"\t\t\t\tOutPut Fi(Aij)"<<endl;
+    FiAij(Matrix);
+    return 0;
+
+
+}
+
 
